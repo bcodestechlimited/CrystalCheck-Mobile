@@ -115,18 +115,20 @@ export default function LiveCamera() {
   const toggleSnap = async () => {
     setUploading(true); // Start loading indicator
 
-    const SignantureToCloudinary = await uploadToCloudinary(data?.signature);
+    // const SignantureToCloudinary = await uploadToCloudinary(data?.signature);
 
-    let savesignature = {
-      guarantorId: data?.guarantorId,
-      signature: SignantureToCloudinary?.secure_url,
-    };
+    // let savesignature = {
+    //   guarantorId: data?.guarantorId,
+    //   signature: SignantureToCloudinary?.secure_url,
+    // };
 
-    console.log({
-      nnnn: savesignature,
-    });
+    // console.log({
+    //   nnnn: savesignature,
+    // });
 
-    Verfymutaion.mutate(savesignature);
+    // Verfymutaion.mutate(savesignature);
+
+    // this was commented becuse we swiched to another method
     setUploading(false); // Start loading indicator
   };
 
@@ -300,7 +302,7 @@ export default function LiveCamera() {
               //   setStart(true);
               // }}
 
-              onPress={toggleSnap}
+              onPress={() => setsnap(true)}
             >
               <Image
                 source={require("../assets/Vector (2).png")}
@@ -379,10 +381,13 @@ const DOJAH = ({ guarantorId, usermaindata, onDataReceived }) => {
           <WebView
             originWhitelist={["*"]}
             source={{
-              uri: `https://identity.dojah.io?widget_id=678e30aed6a17fd17ac3ef7d&metadata[user_id]=${guarantorId}`,
+              // uri: `https://identity.dojah.io?widget_id=67f498436161feca859bc8e3&metadata[user_id]=${guarantorId}`,
+              // uri: `https://identity.dojah.io?widget_id=67f498436161feca859bc8e3&metadata[user_id]=${guarantorId}`,
+              // https://identity.dojah.io?widget_id=67f498436161feca859bc8e3
 
               // `https://identity.dojah.io?widget_id=678e30aed6a17fd17ac3ef7d
               // &metadata[user_id]=${guarantorId}`,
+              uri: `https://identity.dojah.io/?widget_id=67f5b1926161feca85094e87`,
             }}
             allowsInlineMediaPlayback={true}
             mediaPlaybackRequiresUserAction={false}

@@ -63,26 +63,26 @@ export default function LiveCamera() {
     return () => clearInterval(intervalId);
   }, [fetchData]);
 
-  const Verfymutaion = useMutation(
-    (data_info) => {
-      let url = `https://databacebackend.onrender.com/guarantor`;
-      return axios.post(url, data_info, {
-        headers: { "Content-Type": "application/json" },
-      });
-    },
-    {
-      onSuccess: (data) => {
-        // Toast.show({ type: "success", text1: "Verification successful!" });
-        setsnap(true);
-      },
-      onError: (error) => {
-        Toast.show({
-          type: "error",
-          text1: error?.response?.data?.message || "Verification failed",
-        });
-      },
-    }
-  );
+  // const Verfymutaion = useMutation(
+  //   (data_info) => {
+  //     let url = `https://databacebackend.onrender.com/guarantor`;
+  //     return axios.post(url, data_info, {
+  //       headers: { "Content-Type": "application/json" },
+  //     });
+  //   },
+  //   {
+  //     onSuccess: (data) => {
+  //       // Toast.show({ type: "success", text1: "Verification successful!" });
+  //       setsnap(true);
+  //     },
+  //     onError: (error) => {
+  //       Toast.show({
+  //         type: "error",
+  //         text1: error?.response?.data?.message || "Verification failed",
+  //       });
+  //     },
+  //   }
+  // );
 
   const uploadToCloudinary = async (base64Data) => {
     const cloudName = "dkzds0azx"; // Replace with your Cloudinary cloud name
@@ -335,7 +335,9 @@ export default function LiveCamera() {
             />
           )} */}
 
-          {(uploading || Verfymutaion.isLoading) && (
+          {uploading && (
+            //  || Verfymutaion.isLoading
+
             <ActivityIndicator
               size="large"
               color="blue"
@@ -381,13 +383,13 @@ const DOJAH = ({ guarantorId, usermaindata, onDataReceived }) => {
           <WebView
             originWhitelist={["*"]}
             source={{
-              // uri: `https://identity.dojah.io?widget_id=67f498436161feca859bc8e3&metadata[user_id]=${guarantorId}`,
+              uri: `https://identity.dojah.io?widget_id=67f498436161feca859bc8e3&metadata[user_id]=${guarantorId}`,
               // uri: `https://identity.dojah.io?widget_id=67f498436161feca859bc8e3&metadata[user_id]=${guarantorId}`,
               // https://identity.dojah.io?widget_id=67f498436161feca859bc8e3
 
               // `https://identity.dojah.io?widget_id=678e30aed6a17fd17ac3ef7d
               // &metadata[user_id]=${guarantorId}`,
-              uri: `https://identity.dojah.io/?widget_id=67f5b1926161feca85094e87`,
+              // uri: `https://identity.dojah.io/?widget_id=67f5b1926161feca85094e87`,
             }}
             allowsInlineMediaPlayback={true}
             mediaPlaybackRequiresUserAction={false}

@@ -15,6 +15,7 @@ import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Get_All_Candidate_Fun } from "../redux/CandiddateSlice";
+import { axiosInstance, getAxiosConfig } from "../redux/ApiConfig";
 const API_BASEURL = process.env.EXPO_PUBLIC_API_URL;
 
 export default function LiveCamera() {
@@ -27,14 +28,8 @@ export default function LiveCamera() {
   const [count, setCount] = useState(0);
   const [usermaindata, setusermaindata] = useState(null);
   const { user_data } = useSelector((state) => state.AuthSlice);
-  // console.log({
-  //   kkk: user_data,
-  // });
+
   const data = useLocalSearchParams();
-  // console.log({
-  //   oooo: data,
-  // });
-  // let g_id = "6760254bfbc0e16cc2f783df";
 
   let datamain = {
     guarantorId: data?.guarantorId,
@@ -46,12 +41,20 @@ export default function LiveCamera() {
   // });
 
   const fetchData = useCallback(async () => {
+    let getGrantorurl = `${API_BASEURL}v1/guarantors/${data?.guarantorId}`;
+    // const token = user_data?.data?.token;
+    const token = user_data?.data?.token;
+    const response = await axiosInstance.get(
+      getGrantorurl,
+      getAxiosConfig(token)
+    );
+
     // console.log("Fetching data...");
     try {
-      const response = await axios.get(
-        `https://databacebackend.onrender.com/Guarantor_webhook/${data?.guarantorId}`
-      );
-      setusermaindata(response?.data);
+      // const response = await axios.get(
+      //   `https://databacebackend.onrender.com/Guarantor_webhook/${data?.guarantorId}`
+      // );
+      setusermaindata(response?.data?.data?.guarantor);
       setCount((prevCount) => prevCount + 1);
     } catch (error) {
       console.log("Fetch error:", error?.response?.data);
@@ -115,20 +118,6 @@ export default function LiveCamera() {
   const toggleSnap = async () => {
     setUploading(true); // Start loading indicator
 
-    // const SignantureToCloudinary = await uploadToCloudinary(data?.signature);
-
-    // let savesignature = {
-    //   guarantorId: data?.guarantorId,
-    //   signature: SignantureToCloudinary?.secure_url,
-    // };
-
-    // console.log({
-    //   nnnn: savesignature,
-    // });
-
-    // Verfymutaion.mutate(savesignature);
-
-    // this was commented becuse we swiched to another method
     setUploading(false); // Start loading indicator
   };
 
@@ -147,8 +136,10 @@ export default function LiveCamera() {
     },
     {
       onSuccess: () => {
+        // Toast.show({ type: "success", text1: "Verification successful!" });
+
         // dispatch(Get_All_Assigned_guarantor__Fun());
-        Toast.show({ type: "success", text1: "Verification successful!" });
+        Toast.show({ type: "success", text1: "Successful Verification" });
         // setShowModal(false);
         // setComplete(true);
 
@@ -167,16 +158,6 @@ export default function LiveCamera() {
           jaja: error?.response?.data?.message,
         });
 
-        // dispatch(Get_All_Candidate_Fun());
-
-        // setsnap(false);
-        // setCount(0);
-        // setusermaindata(null);
-        // router.push({
-        //   pathname: "/",
-        //   params: {},
-        // });
-
         Toast.show({
           type: "error",
           text1: `${error?.response?.data?.message}`,
@@ -186,19 +167,17 @@ export default function LiveCamera() {
   );
 
   // Function to reset all states
-  const resetState = () => {
+  const resetState = async () => {
+    const SignantureToCloudinary = await uploadToCloudinary(data?.signature);
+
     let maindata_sub = {
       guarantorId: data?.guarantorId,
-      signature: usermaindata?.data[0]?.signature, //SignantureToCloudinary?.secure_url,
-      photo: usermaindata?.data[0]?.photo, //SignantureToCloudinary?.secure_url,
+      signature: SignantureToCloudinary?.secure_url,
     };
     console.log({
       ccxxx: maindata_sub,
     });
     SubmitVerfymutaion.mutate(maindata_sub);
-    // setsnap(false);
-    // setCount(0);
-    // setusermaindata(null);
   };
 
   return (
@@ -215,7 +194,7 @@ export default function LiveCamera() {
             }}
           />
 
-          {usermaindata?.data[0]?.verification_status === "Completed" && (
+          {usermaindata?.isVerified && (
             <View>
               <TouchableOpacity
                 style={{
@@ -243,12 +222,6 @@ export default function LiveCamera() {
               </TouchableOpacity>
             </View>
           )}
-
-          {/* <View style={{ padding: 10, alignItems: "center" }}>
-            <Text style={{ fontSize: 16, color: "black" }}>
-              Fetch Count: {count}
-            </Text>
-          </View> */}
         </>
       ) : (
         <>
@@ -322,22 +295,7 @@ export default function LiveCamera() {
             </TouchableOpacity>
           </View>
 
-          {/* {uploading  || Verfymutaion.isLoading && (
-            <ActivityIndicator
-              size="large"
-              color="blue"
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: [{ translateX: -25 }, { translateY: -25 }],
-              }}
-            />
-          )} */}
-
           {uploading && (
-            //  || Verfymutaion.isLoading
-
             <ActivityIndicator
               size="large"
               color="blue"
@@ -350,9 +308,6 @@ export default function LiveCamera() {
             />
           )}
         </>
-        // <View style={{ flex: 1, justifyContent: "center" }}>
-        //   <Button title="Start Snap" onPress={toggleSnap} color="red" />
-        // </View>
       )}
     </>
   );
@@ -360,10 +315,6 @@ export default function LiveCamera() {
 
 const DOJAH = ({ guarantorId, usermaindata, onDataReceived }) => {
   const deviceHeight = Dimensions.get("window").height;
-
-  // useEffect(() => {
-  //   console.log("DOJAH component usermaindata updated:", usermaindata);
-  // }, [usermaindata]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -383,13 +334,9 @@ const DOJAH = ({ guarantorId, usermaindata, onDataReceived }) => {
           <WebView
             originWhitelist={["*"]}
             source={{
-              uri: `https://identity.dojah.io?widget_id=67f498436161feca859bc8e3&metadata[user_id]=${guarantorId}`,
-              // uri: `https://identity.dojah.io?widget_id=67f498436161feca859bc8e3&metadata[user_id]=${guarantorId}`,
-              // https://identity.dojah.io?widget_id=67f498436161feca859bc8e3
+              // uri: `https://identity.dojah.io?widget_id=67f5b1926161feca85094e87&metadata[user_id]=${guarantorId}`, // this is the test link
 
-              // `https://identity.dojah.io?widget_id=678e30aed6a17fd17ac3ef7d
-              // &metadata[user_id]=${guarantorId}`,
-              // uri: `https://identity.dojah.io/?widget_id=67f5b1926161feca85094e87`,
+              uri: `https://identity.dojah.io?widget_id=67f498436161feca859bc8e3&metadata[user_id]=${guarantorId}`, // this is the live link
             }}
             allowsInlineMediaPlayback={true}
             mediaPlaybackRequiresUserAction={false}

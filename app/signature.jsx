@@ -54,15 +54,7 @@ const Signature = () => {
     }
 
     setUploading(true); // Set a loading state if needed
-    // navigate.push({
-    //   pathname: "/verifySignature",
-    //   params: {
-    //     signature,
-    //     guarantorId: data?.guarantorId,
-    //     guarantor_name: data?.guarantor_name,
-    //     credential: data?.credential,
-    //   },
-    // });
+
     try {
       const response = await axios.put(
         `${API_BASEURL}v1/guarantors/${data?.guarantorId}`, // Replace `{{base_URL}}` with the actual base URL
